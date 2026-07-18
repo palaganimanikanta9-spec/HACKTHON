@@ -19,7 +19,7 @@ function GoogleIcon() {
 }
 
 export default function SignInPage() {
-  const { isLoaded, signIn, setActive } = useSignIn();
+  const { isLoaded, signIn, setActive } = useSignIn() as any;
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState("");
