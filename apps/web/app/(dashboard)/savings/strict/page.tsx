@@ -157,7 +157,7 @@ export default function StrictSavingsDashboardPage() {
             </div>
             <div className="col-span-2 pt-2 border-t border-white/5 flex justify-between items-center">
               <span className="text-2xs text-white/40 uppercase font-semibold">Maturity Status</span>
-              <Badge variant={mounted && isMatured ? "success" : "error"} size="sm" suppressHydrationWarning>
+              <Badge variant={mounted && isMatured ? "success" : "error"} size="sm">
                 {mounted ? (isMatured ? "Matured" : "Locked") : "Locked"}
               </Badge>
             </div>
