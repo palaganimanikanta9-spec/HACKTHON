@@ -331,7 +331,7 @@ export default function DocumentUploadPage() {
         <div>
           <p className="text-3xs text-text-tertiary uppercase tracking-wider font-semibold">Verification Request</p>
           <p className="text-lg font-bold text-text-primary number-font mt-0.5">
-            {formatCurrency(currentVerificationRequest.amount)}
+            {formatCurrency(currentVerificationRequest?.amount ?? 0)}
           </p>
         </div>
         <Badge variant="ai" size="sm">
