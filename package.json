@@ -7,11 +7,12 @@
     "server"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=apps/web",
-    "build": "npm run build --workspace=apps/web",
-    "start": "npm run start --workspace=apps/web"
+    "dev": "concurrently \"npm run dev --workspace=apps/web\" \"npm run dev --workspace=server\"",
+    "build": "npm run prisma:generate --workspace=server && npm run build --workspace=server && npm run build --workspace=apps/web",
+    "start": "concurrently \"npm run start --workspace=apps/web\" \"npm run start --workspace=server\""
   },
   "dependencies": {
+    "concurrently": "^8.2.2",
     "@clerk/backend": "^1.24.1",
     "@clerk/nextjs": "^7.5.20",
     "@prisma/client": "^5.14.0",
