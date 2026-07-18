@@ -126,6 +126,8 @@ export interface AppSettings {
   biometricsEnabled: boolean;
   notificationsEnabled: boolean;
   strictModeEnabled: boolean;
+  withdrawalThreshold?: number;
+  endDate?: string;
 }
 
 export type Theme = "dark" | "light" | "system";
