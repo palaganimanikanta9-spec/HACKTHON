@@ -1,0 +1,5 @@
+CON EDISON UTILITY BILL
+Date: 2026-07-17
+Service: Power Supply Charges
+Total Due: 145.20
+Electricity charges are classified as essential utility expenses.

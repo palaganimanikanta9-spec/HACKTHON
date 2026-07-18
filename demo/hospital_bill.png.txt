@@ -1,0 +1,5 @@
+HOSPITAL EMERGENCY INVOICE
+Date: 2026-07-17
+Treatment: Emergency Room Visit
+Total Due: 750.00
+Medical treatment is classified as an essential expense.

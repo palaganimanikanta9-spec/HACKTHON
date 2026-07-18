@@ -1,0 +1,258 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SmartSave AI Wallet REST API",
+    "version": "1.0.0",
+    "description": "Production-ready backend API service for SmartSave AI Wallet, orchestrating OCR extraction, Gemini AI validation, and Wallet transactions."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Check API and Microservice Health Status",
+        "responses": {
+          "200": {
+            "description": "Subsystem checks completed successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" },
+                  "name": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created successfully" }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Log in and obtain a JWT token",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Authentication successful" }
+        }
+      }
+    },
+    "/api/v1/wallet/balance": {
+      "get": {
+        "summary": "Retrieve Main Wallet card balance details",
+        "responses": {
+          "200": { "description": "Wallet details payload" }
+        }
+      }
+    },
+    "/api/v1/wallet/deposit": {
+      "post": {
+        "summary": "Fund the Main Wallet externally via credit card",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": { "type": "number" }
+                },
+                "required": ["amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Deposit successful" }
+        }
+      }
+    },
+    "/api/v1/wallet/withdraw": {
+      "post": {
+        "summary": "Pay or send money out from Main Wallet externally",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": { "type": "number" }
+                },
+                "required": ["amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Withdrawal successful" }
+        }
+      }
+    },
+    "/api/v1/savings/deposit": {
+      "post": {
+        "summary": "Fund Flexible Normal Savings from Main Wallet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": { "type": "number" }
+                },
+                "required": ["amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Flexible Savings funded successfully" }
+        }
+      }
+    },
+    "/api/v1/savings/withdraw": {
+      "post": {
+        "summary": "Withdraw Flexible Savings to Main Wallet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": { "type": "number" }
+                },
+                "required": ["amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Flexible Savings withdrawn successfully" }
+        }
+      }
+    },
+    "/api/v1/strict-savings/withdraw": {
+      "post": {
+        "summary": "Initiate a Strict Savings Protected Vault withdrawal",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": { "type": "number" }
+                },
+                "required": ["amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns status AUTO_APPROVED (direct transfer) or PENDING_VERIFICATION (upload required)"
+          }
+        }
+      }
+    },
+    "/api/v1/strict-savings/upload": {
+      "post": {
+        "summary": "Upload invoice/receipt proof document for AI verification pipeline",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": { "type": "string" },
+                  "document": { "type": "string", "format": "binary" }
+                },
+                "required": ["requestId", "document"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns full OCR and AI verification result details"
+          }
+        }
+      }
+    },
+    "/api/v1/strict-savings/decide": {
+      "post": {
+        "summary": "Simulate and log manual/system approvals override",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestId": { "type": "string" },
+                  "status": { "type": "string", "enum": ["APPROVED", "REJECTED"] },
+                  "reasoning": { "type": "string" }
+                },
+                "required": ["requestId", "status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Decision completed and saved" }
+        }
+      }
+    }
+  }
+}

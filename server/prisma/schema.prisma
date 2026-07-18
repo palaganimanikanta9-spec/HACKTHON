@@ -1,0 +1,151 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ── Models ────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id // Clerk user ID (e.g. user_...)
+  firstName String
+  lastName  String
+  email     String   @unique
+  avatarUrl String?
+  joinedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wallet               Wallet?
+  normalSavings        NormalSavings?
+  strictSavings        StrictSavings?
+  settings             Settings?
+  transactions         Transaction[]
+  notifications        Notification[]
+  verificationRequests VerificationRequest[]
+
+  @@index([email])
+}
+
+model Wallet {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  balance    Decimal  @default(0.00) @db.Decimal(18, 2)
+  currency   String   @default("USD")
+  cardNumber String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model NormalSavings {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  balance       Decimal  @default(0.00) @db.Decimal(18, 2)
+  currency      String   @default("USD")
+  monthlyGrowth Float    @default(2.4)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model StrictSavings {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  balance             Decimal  @default(0.00) @db.Decimal(18, 2)
+  currency            String   @default("USD")
+  withdrawalThreshold Decimal  @default(500.00) @db.Decimal(18, 2)
+  totalSaved          Decimal  @default(0.00) @db.Decimal(18, 2)
+  startDate           DateTime @default(now())
+  endDate             DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Transaction {
+  id               String   @id @default(uuid())
+  userId           String
+  type             String   // SEND, RECEIVE, DEPOSIT, WITHDRAWAL, TRANSFER_IN, TRANSFER_OUT, AUTO_TRANSFER
+  direction        String   // CREDIT, DEBIT
+  amount           Decimal  @db.Decimal(18, 2)
+  currency         String   @default("USD")
+  counterpartyName String?
+  description      String?
+  status           String   // PENDING, COMPLETED, FAILED, REVERSED
+  walletType       String   // MAIN, SAVINGS, STRICT
+  classification   String?  // ESSENTIAL, NON_ESSENTIAL
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([walletType])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // SUCCESS, WARNING, INFO, ERROR
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+}
+
+model VerificationRequest {
+  id             String   @id @default(uuid())
+  userId         String
+  amount         Decimal  @db.Decimal(18, 2)
+  status         String   // PENDING_VERIFICATION, VERIFYING, APPROVED, REJECTED, EXPIRED
+  classification String?  // ESSENTIAL, NON_ESSENTIAL
+  confidence     Float?
+  reasoning      String?
+  documentUrl    String?
+  documentName   String?
+  documentSize   Int?
+  mimeType       String?
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Settings {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  biometricsEnabled   Boolean  @default(true)
+  notificationsEnabled Boolean  @default(true)
+  strictModeEnabled   Boolean  @default(true)
+  theme               String   @default("dark")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
